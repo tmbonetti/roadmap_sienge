@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planejamento Estratégico de Produto — Sienge</title>
+<style>
+  /* ── TOKENS ─────────────────────────────────────────────── */
+  :root {
+    --red:        #C90000;
+    --red-light:  #fdf0f0;
+    --navy:       #091850;
+    --navy-light: #eef0f7;
+    --bg:         #FBFAF9;
+    --surface:    #FFFFFF;
+    --text:       #222222;
+    --muted:      #666666;
+    --border:     #E8E4E0;
+    --radius:     8px;
+    --shadow:     0 1px 4px rgba(0,0,0,.08);
+    --shadow-md:  0 4px 16px rgba(0,0,0,.10);
+  }
+
+  /* ── RESET ───────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+  input, textarea, select { font-family: inherit; font-size: inherit; color: inherit; }
+  button { cursor: pointer; font-family: inherit; }
+  a { color: var(--navy); }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  .site-header {
+    background: var(--navy);
+    padding: 0 28px;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.35);
+  }
+
+  /* ── HEADER CENTRE: page title + team name ────────────────── */
+  .header-centre {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px 0;
+  }
+  .header-doc-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .header-team-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .header-team-label {
+    font-size: 12px;
+    color: rgba(255,255,255,.45);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .header-team-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,.85);
+    border-bottom: 1px dashed rgba(255,255,255,.3);
+    padding-bottom: 1px;
+    min-width: 60px;
+    transition: border-color .15s, background .15s;
+    border-radius: 3px 3px 0 0;
+  }
+  .header-team-name:hover { background: rgba(255,255,255,.07) !important; border-bottom-color: rgba(255,255,255,.6); }
+  .header-team-name:focus { background: rgba(255,255,255,.12) !important; border-bottom-color: #fff; box-shadow: none !important; outline: none; }
+
+  .header-actions { display: flex; align-items: center; gap: 8px; padding: 0 0 0 20px; border-left: 1px solid rgba(255,255,255,.12); }
+
+  /* ── EDITABLE FIELDS ─────────────────────────────────────── */
+  [contenteditable] { outline: none; border-radius: 3px; transition: background .15s; }
+  [contenteditable]:hover { background: rgba(201,0,0,.05); }
+  [contenteditable]:focus { background: rgba(201,0,0,.08); box-shadow: 0 0 0 2px var(--red); }
+  [contenteditable].navy-edit:hover { background: rgba(9,24,80,.05); }
+  [contenteditable].navy-edit:focus { background: rgba(9,24,80,.08); box-shadow: 0 0 0 2px var(--navy); }
+
+  /* ── TABS ────────────────────────────────────────────────── */
+  .tabs-bar {
+    display: flex;
+    gap: 4px;
+    padding: 16px 32px 0;
+    border-bottom: 2px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 76px;
+    z-index: 90;
+  }
+  .tab-btn {
+    padding: 10px 24px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color .15s, border-color .15s;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .tab-btn small { font-weight: 400; font-size: 11px; color: var(--muted); }
+  .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+  .tab-btn.past.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  /* ── QUARTER PANEL ───────────────────────────────────────── */
+  .quarter-panel {
+    display: none;
+    padding: 28px 32px;
+  }
+  .quarter-panel.active { display: block; }
+
+  .quarter-banner {
+    background: var(--surface);
+    border-left: 5px solid var(--red);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: start;
+    box-shadow: var(--shadow);
+  }
+  .quarter-banner.past { border-left-color: var(--navy); }
+  .qb-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+  .qb-label.next { background: var(--red-light); color: var(--red); }
+  .qb-label.past { background: var(--navy-light); color: var(--navy); }
+  .qb-main {}
+  .qb-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .qb-title span { color: var(--red); }
+  .qb-title.past-color span { color: var(--navy); }
+  .qb-period { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .qb-period.past-color { color: var(--navy); }
+  .qb-focus { font-size: 13px; color: var(--muted); }
+
+  /* ── STRATEGIC PANEL ─────────────────────────────────────── */
+  .strategic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .strategic-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    border-top: 3px solid var(--red);
+  }
+  .strategic-card.navy { border-top-color: var(--navy); }
+  .strategic-card h4 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+  .strategic-card.navy h4 { color: var(--navy); }
+  .strategic-card p { font-size: 13px; color: var(--text); line-height: 1.55; }
+  .focus-list { list-style: none; }
+  .focus-list li {
+    font-size: 13px;
+    color: var(--text);
+    padding: 3px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .focus-list li::before { content: '•'; color: var(--navy); flex-shrink: 0; margin-top: 1px; }
+  .add-focus-btn {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--navy);
+    background: none;
+    border: 1px dashed var(--navy);
+    border-radius: 4px;
+    padding: 3px 10px;
+    opacity: .6;
+    transition: opacity .15s;
+  }
+  .add-focus-btn:hover { opacity: 1; }
+
+  /* ── COLUMNS ─────────────────────────────────────────────── */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .col-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+  .col-title.delivery { background: var(--red); color: #fff; }
+  .col-title.discovery { background: var(--navy); color: #fff; }
+  .add-btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: none;
+    transition: opacity .15s, transform .1s;
+  }
+  .add-btn:hover { opacity: .85; transform: translateY(-1px); }
+  .add-btn.delivery { background: var(--red-light); color: var(--red); border: 1px solid var(--red); }
+  .add-btn.discovery { background: var(--navy-light); color: var(--navy); border: 1px solid var(--navy); }
+
+  /* ── CARDS ───────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: box-shadow .15s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .card-num.delivery { background: var(--red); }
+  .card-num.discovery { background: var(--navy); }
+  .card-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    min-height: 21px;
+  }
+  .card-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .icon-btn {
+    background: none;
+    border: none;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1;
+    opacity: .35;
+    transition: opacity .15s, background .15s;
+  }
+  .icon-btn:hover { opacity: 1; background: var(--border); }
+  .icon-btn.del:hover { background: #fde8e8; opacity: 1; }
+
+  .card-body { padding: 10px 14px 12px; }
+  .field-row { margin-bottom: 8px; }
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .field-label.delivery { color: var(--red); }
+  .field-label.discovery { color: var(--navy); }
+  .field-text {
+    font-size: 13px;
+    color: var(--text);
+    min-height: 20px;
+    display: block;
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 3px 5px;
+    line-height: 1.5;
+    transition: border-color .15s, background .15s;
+    background: transparent;
+  }
+  .field-text:hover { border-color: var(--border); background: #f9f9f9; }
+  .field-text:focus { border-color: var(--red); background: #fff; outline: none; }
+  .field-text.discovery:focus { border-color: var(--navy); }
+
+  .jira-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .jira-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .jira-label.delivery { color: var(--red); }
+  .jira-label.discovery { color: var(--navy); }
+  .jira-input {
+    flex: 1;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    background: var(--bg);
+    transition: border-color .15s;
+  }
+  .jira-input:focus { border-color: var(--red); outline: none; background: #fff; }
+  .jira-input.discovery:focus { border-color: var(--navy); }
+  .jira-link {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--navy-light);
+    color: var(--navy);
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .jira-link:hover { background: var(--navy); color: #fff; }
+  .jira-link.delivery-link { background: var(--red-light); color: var(--red); }
+  .jira-link.delivery-link:hover { background: var(--red); color: #fff; }
+
+  /* ── BUTTONS ─────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn:hover { opacity: .88; transform: translateY(-1px); }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-navy { background: var(--navy); color: #fff; }
+  .btn-outline { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+
+  /* ── MODAL ───────────────────────────────────────────────── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 28px 32px;
+    width: 420px;
+    max-width: 94vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* ── PRINT / EXPORT ──────────────────────────────────────── */
+  /*
+    SLIDE EXPORT — landscape A4 (297×210 mm)
+    We produce one "slide" per page. Each page is a self-contained
+    snapshot that mirrors the screen layout and never breaks mid-card.
+  */
+  @media print {
+    /* Reset browser chrome */
+    @page { size: 297mm 210mm landscape; margin: 0; }
+
+    body { background: #fff !important; }
+    .site-header, .tabs-bar, .header-actions,
+    .card-actions, .add-btn, .add-focus-btn,
+    .icon-btn, .modal-overlay { display: none !important; }
+
+    /* Make all panels visible for print */
+    .quarter-panel { display: block !important; padding: 0 !important; }
+
+    /* Each quarter = one slide page */
+    .print-slide {
+      width: 297mm;
+      min-height: 210mm;
+      max-height: 210mm;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+      padding: 14mm 16mm 10mm;
+      background: #FBFAF9 !important;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .print-slide:last-child { page-break-after: avoid; break-after: avoid; }
+
+    /* Slide header strip */
+    .slide-print-header {
+      display: flex !important;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8mm;
+      border-bottom: 2.5pt solid #C90000;
+      padding-bottom: 4mm;
+    }
+    .slide-print-header.past-border { border-bottom-color: #091850; }
+
+    /* Sienge print logo */
+    .print-sienge-logo { display: flex !important; align-items: center; gap: 5mm; }
+    .print-sienge-icon {
+      width: 22pt; height: 22pt;
+      background: linear-gradient(160deg, #E8000A 0%, #9B0007 60%, #6B0005 100%);
+      border-radius: 5pt;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 13pt; font-weight: 900; font-style: italic;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .print-sienge-text { display: flex; flex-direction: column; }
+    .print-sienge-name { font-size: 13pt; font-weight: 800; color: #111; line-height: 1; }
+    .print-sienge-sub  { font-size: 6pt; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: #888; margin-top: 1.5pt; }
+
+    .print-doc-meta { display: flex; flex-direction: column; align-items: flex-start; padding-left: 5mm; border-left: 1.5pt solid #e0e0e0; }
+    .print-doc-eyebrow { font-size: 7pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #C90000; margin-bottom: 1.5pt; }
+    .print-doc-team { font-size: 9pt; font-weight: 700; color: #222; }
+    .slide-print-logo { font-size: 10pt; font-weight: 800; color: #C90000; letter-spacing: .04em; }
+    .slide-print-logo.past { color: #091850; }
+    .slide-print-meta { text-align: right; }
+    .slide-print-meta .qname { font-size: 14pt; font-weight: 800; color: #222; }
+    .slide-print-meta .qname em { color: #C90000; font-style: normal; }
+    .slide-print-meta .qname.past-em em { color: #091850; }
+    .slide-print-meta .qperiod { font-size: 9pt; color: #091850; font-weight: 600; }
+    .slide-print-meta .qfocus { font-size: 8pt; color: #666; }
+
+    /* Hide screen header inside print slide */
+    .slide-print-header { }
+
+    /* Content area grows */
+    .print-content-area { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+
+    /* Strategic row at top */
+    .print-strategic {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5mm;
+      margin-bottom: 6mm;
+    }
+    .print-strategic .strategic-card {
+      padding: 5mm 6mm;
+      border-top-width: 2pt;
+      box-shadow: none;
+      border: 1px solid #e8e4e0;
+      border-top: 2pt solid #C90000;
+    }
+    .print-strategic .strategic-card.navy { border-top-color: #091850; }
+    .print-strategic .strategic-card h4 { font-size: 7pt; margin-bottom: 3mm; }
+    .print-strategic .strategic-card p,
+    .print-strategic .focus-list li { font-size: 8pt; line-height: 1.4; }
+
+    /* Two-column items */
+    .print-columns {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr;
+      gap: 6mm;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .print-col-title {
+      display: inline-block;
+      font-size: 7pt;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 2mm 5mm;
+      border-radius: 20pt;
+      margin-bottom: 4mm;
+    }
+    .print-col-title.delivery { background: #C90000; color: #fff; }
+    .print-col-title.discovery { background: #091850; color: #fff; }
+
+    /* Cards in print */
+    .print-card {
+      background: #fff;
+      border: 1pt solid #e8e4e0;
+      border-radius: 5pt;
+      margin-bottom: 3mm;
+      overflow: hidden;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .print-card-head {
+      display: flex;
+      align-items: center;
+      gap: 4mm;
+      padding: 2.5mm 4mm;
+      border-bottom: 1pt solid #e8e4e0;
+      background: #fafafa;
+    }
+    .print-num {
+      width: 14pt; height: 14pt;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 7pt; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .print-num.delivery { background: #C90000; }
+    .print-num.discovery { background: #091850; }
+    .print-card-title { font-size: 8pt; font-weight: 700; flex: 1; line-height: 1.3; }
+    .print-card-jira { font-size: 7pt; color: #091850; }
+    .print-card-body { padding: 2mm 4mm 3mm; }
+    .print-field-label { font-size: 6.5pt; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .print-field-label.delivery { color: #C90000; }
+    .print-field-label.discovery { color: #091850; }
+    .print-field-val { font-size: 7.5pt; color: #222; line-height: 1.35; margin-bottom: 2mm; }
+
+    /* Hide the screen-only structure during print */
+    .screen-only { display: none !important; }
+  }
+
+  /* ── SIZE BADGE ──────────────────────────────────────────── */
+  .size-select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: opacity .15s;
+    flex-shrink: 0;
+  }
+  .size-select:focus { outline: 2px solid var(--red); outline-offset: 1px; }
+  .size-select option { font-weight: 700; }
+  /* colours per size — delivery */
+  .size-select.delivery.sz-      { background: #f0f0f0; color: #999; }
+  .size-select.delivery.sz-XS    { background: #e8f5e9; color: #2e7d32; }
+  .size-select.delivery.sz-S     { background: #e3f2fd; color: #1565c0; }
+  .size-select.delivery.sz-M     { background: #fff8e1; color: #f57f17; }
+  .size-select.delivery.sz-L     { background: #fff3e0; color: #e65100; }
+  .size-select.delivery.sz-XL    { background: #fce4ec; color: #880e4f; }
+  .size-select.delivery.sz-XXL   { background: #f3e5f5; color: #6a1b9a; }
+  /* colours per size — discovery */
+  .size-select.discovery.sz-     { background: #f0f0f0; color: #999; }
+  .size-select.discovery.sz-XS   { background: #e8f5e9; color: #2e7d32; }
+  .size-select.discovery.sz-S    { background: #e3f2fd; color: #1565c0; }
+  .size-select.discovery.sz-M    { background: #fff8e1; color: #f57f17; }
+  .size-select.discovery.sz-L    { background: #fff3e0; color: #e65100; }
+  .size-select.discovery.sz-XL   { background: #fce4ec; color: #880e4f; }
+  .size-select.discovery.sz-XXL  { background: #f3e5f5; color: #6a1b9a; }
+
+  /* print size badge */
+  .print-size-badge {
+    font-size: 6.5pt;
+    font-weight: 800;
+    border-radius: 20pt;
+    padding: 1pt 5pt;
+    flex-shrink: 0;
+  }
+
+  /* ── EVALUATION TAB ──────────────────────────────────────── */
+  .eval-panel { padding: 28px 32px; display: none; }
+  .eval-panel.active { display: block; }
+
+  .eval-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .eval-header h2 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .eval-header h2 span { color: var(--navy); }
+
+  /* Status pills */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 3px 11px;
+    border-radius: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s, transform .1s;
+  }
+  .status-pill:hover { opacity: .82; transform: translateY(-1px); }
+  .status-pill.piloto   { background: #e3f2fd; color: #1565c0; }
+  .status-pill.escalando { background: #fff8e1; color: #f57f17; }
+  .status-pill.concluida { background: #e8f5e9; color: #2e7d32; }
+  .status-pill::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* Evaluation table */
+  .eval-table-wrap {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .eval-table-wrap + .eval-table-wrap { margin-top: 0; }
+
+  .eval-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eval-section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .eval-table { width: 100%; border-collapse: collapse; }
+  .eval-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    background: #fafaf9;
+  }
+  .eval-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  .eval-table tr:last-child td { border-bottom: none; }
+  .eval-table tr:hover td { background: #fafaf9; }
+
+  /* Feature name cell */
+  .feat-name {
+    font-weight: 700;
+    color: var(--text);
+    min-width: 180px;
+  }
+  .feat-desc {
+    color: var(--muted);
+    font-size: 12px;
+    min-width: 240px;
+    max-width: 360px;
+  }
+  .feat-desc [contenteditable] { display: block; }
+
+  /* KPI link cell */
+  .kpi-cell { display: flex; align-items: center; gap: 8px; min-width: 200px; }
+  .kpi-input {
+    flex: 1;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    background: var(--bg);
+    transition: border-color .15s;
+    min-width: 0;
+  }
+  .kpi-input:focus { border-color: var(--navy); outline: none; background: #fff; }
+  .kpi-link {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--navy-light);
+    color: var(--navy);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .kpi-link:hover { background: var(--navy); color: #fff; }
+
+  /* Status select */
+  .status-select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .status-select:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+  .status-select.s-piloto    { background: #e3f2fd; color: #1565c0; }
+  .status-select.s-escalando { background: #fff8e1; color: #f57f17; }
+  .status-select.s-concluida { background: #e8f5e9; color: #2e7d32; }
+
+  /* Row actions */
+  .eval-row-actions { display: flex; gap: 4px; align-items: center; }
+  .archive-btn {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+  }
+  .archive-btn:hover { background: #fff8e1; color: #b45309; border-color: #fbbf24; }
+
+  /* Archived section */
+  .archived-toggle {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .archived-toggle:hover { color: var(--text); }
+  .archived-section { display: none; }
+  .archived-section.open { display: block; }
+  .archived-table { width: 100%; border-collapse: collapse; opacity: .6; }
+  .archived-table th {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); padding: 6px 14px; border-bottom: 1px solid var(--border);
+    background: #fafaf9; text-align: left;
+  }
+  .archived-table td {
+    padding: 8px 14px; border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--muted); vertical-align: middle;
+  }
+  .archived-table tr:last-child td { border-bottom: none; }
+  .restore-btn {
+    font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+    cursor: pointer; transition: background .15s;
+  }
+  .restore-btn:hover { background: var(--navy-light); color: var(--navy); }
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--muted);
+    font-size: 13px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+  }
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .25s, transform .25s;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────── -->
+<header class="site-header screen-only">
+
+  <!-- Centre: doc title + editable team name -->
+  <div class="header-centre">
+    <div class="header-doc-title">Planejamento Estratégico de Produto</div>
+    <div class="header-team-row">
+      <span class="header-team-label">Time:</span>
+      <span class="header-team-name"
+            contenteditable="true"
+            id="team-name"
+            spellcheck="false">PlugAndPay</span>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="header-actions">
+    <button class="btn btn-outline" style="border-color:rgba(255,255,255,.2);color:#fff;background:rgba(255,255,255,.06)" onclick="exportReport()">⬇ Exportar Relatório</button>
+  </div>
+
+</header>
+
+<!-- ── TABS ───────────────────────────────────────────────── -->
+<div class="tabs-bar screen-only">
+  <button class="tab-btn past" id="tab-q2" onclick="switchTab('q2')">
+    <span id="tab-q2-label">Q2/2026</span>
+    <small>Último trimestre</small>
+  </button>
+  <button class="tab-btn active" id="tab-q3" onclick="switchTab('q3')">
+    <span id="tab-q3-label">Q3/2026</span>
+    <small>Próximo trimestre</small>
+  </button>
+  <button class="tab-btn" id="tab-eval" onclick="switchTab('eval')">
+    <span>Desempenho</span>
+    <small>Soluções entregues</small>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     QUARTER Q3 — PRÓXIMO
+════════════════════════════════════════════════════════════ -->
+<div class="quarter-panel active" id="panel-q3">
+
+  <!-- Banner -->
+  <div class="quarter-banner">
+    <span class="qb-label next">Próximo trimestre</span>
+    <div class="qb-main">
+      <div class="qb-title">
+        Roadmap <span contenteditable="true" id="q3-name" spellcheck="false">PlugAndPay</span>
+        &nbsp;<span contenteditable="true" id="q3-quarter" class="navy-edit" spellcheck="false">Q3/2026</span>
+      </div>
+      <div class="qb-period" contenteditable="true" id="q3-period" spellcheck="false">Jul – Set/2026</div>
+      <div class="qb-focus" contenteditable="true" id="q3-focus" spellcheck="false">Foco redução da superfície de erros e expansão de piloto.</div>
+    </div>
+  </div>
+
+  <!-- Strategic -->
+  <div class="strategic-grid">
+    <div class="strategic-card">
+      <h4>Objetivo do Trimestre</h4>
+      <ul class="focus-list" id="q3-obj-list">
+        <li><span contenteditable="true" spellcheck="false">Evoluir a visão executiva e fortalecer a governança</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Ampliar a inteligência sobre o orçamento empresarial</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+      </ul>
+      <button class="add-focus-btn" onclick="addFocusItem('q3-obj-list')">+ item</button>
+    </div>
+    <div class="strategic-card navy">
+      <h4>Foco Estratégico</h4>
+      <ul class="focus-list" id="q3-focus-list">
+        <li><span contenteditable="true" spellcheck="false">Mais dados e visibilidade para decisões</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Governança, compliance e confiabilidade</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Adoção e experiência do usuário</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+      </ul>
+      <button class="add-focus-btn" onclick="addFocusItem('q3-focus-list')">+ item</button>
+    </div>
+    <div class="strategic-card">
+      <h4>Expectativa</h4>
+      <ul class="focus-list" id="q3-exp-list">
+        <li><span contenteditable="true" spellcheck="false">Entrega contínua dos épicos de Delivery</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Geração de valor para o negócio</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+      </ul>
+      <button class="add-focus-btn" onclick="addFocusItem('q3-exp-list')">+ item</button>
+    </div>
+  </div>
+
+  <!-- Columns -->
+  <div class="columns">
+    <!-- DELIVERY -->
+    <div>
+      <div class="col-header">
+        <span class="col-title delivery">Itens de Delivery</span>
+        <button class="add-btn delivery" onclick="addCard('q3-delivery-list','delivery')">+ Delivery</button>
+      </div>
+      <div id="q3-delivery-list">
+        <!-- Cards gerados via JS -->
+      </div>
+    </div>
+    <!-- DISCOVERY -->
+    <div>
+      <div class="col-header">
+        <span class="col-title discovery">Itens de Discovery</span>
+        <button class="add-btn discovery" onclick="addCard('q3-discovery-list','discovery')">+ Discovery</button>
+      </div>
+      <div id="q3-discovery-list">
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-q3 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     QUARTER Q2 — PASSADO
+════════════════════════════════════════════════════════════ -->
+<div class="quarter-panel" id="panel-q2">
+
+  <div class="quarter-banner past">
+    <span class="qb-label past">Último trimestre</span>
+    <div class="qb-main">
+      <div class="qb-title past-color">
+        Roadmap <span contenteditable="true" id="q2-name" spellcheck="false">PlugAndPay</span>
+        &nbsp;<span contenteditable="true" id="q2-quarter" class="navy-edit" spellcheck="false">Q2/2026</span>
+      </div>
+      <div class="qb-period past-color" contenteditable="true" id="q2-period" spellcheck="false">Abr – Jun/2026</div>
+      <div class="qb-focus" contenteditable="true" id="q2-focus" spellcheck="false">Foco em evolução da visão gerencial da inteligência de dados e governança.</div>
+    </div>
+  </div>
+
+  <div class="strategic-grid">
+    <div class="strategic-card navy">
+      <h4>Objetivo do Trimestre</h4>
+      <ul class="focus-list" id="q2-obj-list">
+        <li><span contenteditable="true" spellcheck="false">Evoluir a visão executiva e fortalecer a governança</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Ampliar a inteligência sobre o orçamento empresarial</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+      </ul>
+      <button class="add-focus-btn" onclick="addFocusItem('q2-obj-list')">+ item</button>
+    </div>
+    <div class="strategic-card navy">
+      <h4>Foco Estratégico</h4>
+      <ul class="focus-list" id="q2-focus-list">
+        <li><span contenteditable="true" spellcheck="false">Mais dados e visibilidade para decisões</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Governança, compliance e confiabilidade</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Adoção e experiência do usuário</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+      </ul>
+      <button class="add-focus-btn" onclick="addFocusItem('q2-focus-list')">+ item</button>
+    </div>
+    <div class="strategic-card navy">
+      <h4>Expectativa</h4>
+      <ul class="focus-list" id="q2-exp-list">
+        <li><span contenteditable="true" spellcheck="false">Entrega contínua dos épicos de Delivery</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+        <li><span contenteditable="true" spellcheck="false">Geração de valor para o negócio</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button></li>
+      </ul>
+      <button class="add-focus-btn" onclick="addFocusItem('q2-exp-list')">+ item</button>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div>
+      <div class="col-header">
+        <span class="col-title delivery">Itens de Delivery</span>
+        <button class="add-btn delivery" onclick="addCard('q2-delivery-list','delivery')">+ Delivery</button>
+      </div>
+      <div id="q2-delivery-list"></div>
+    </div>
+    <div>
+      <div class="col-header">
+        <span class="col-title discovery">Itens de Discovery</span>
+        <button class="add-btn discovery" onclick="addCard('q2-discovery-list','discovery')">+ Discovery</button>
+      </div>
+      <div id="q2-discovery-list"></div>
+    </div>
+  </div>
+
+</div><!-- /panel-q2 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     EVALUATION PANEL
+════════════════════════════════════════════════════════════ -->
+<div class="eval-panel" id="panel-eval">
+
+  <div class="eval-header">
+    <h2>Desempenho — <span>Soluções Entregues</span></h2>
+    <button class="btn btn-navy" onclick="addEvalItem()">+ Solução</button>
+  </div>
+
+  <!-- Active features table -->
+  <div class="eval-table-wrap">
+    <div class="eval-section-head">
+      <span class="eval-section-title">Soluções em acompanhamento</span>
+    </div>
+    <table class="eval-table">
+      <thead>
+        <tr>
+          <th style="width:22%">Solução</th>
+          <th style="width:30%">Descrição</th>
+          <th style="width:14%">Status</th>
+          <th style="width:24%">Análise de KPI</th>
+          <th style="width:10%"></th>
+        </tr>
+      </thead>
+      <tbody id="eval-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Archived section -->
+  <button class="archived-toggle" onclick="toggleArchived()">
+    <span id="archived-arrow">▶</span> Soluções arquivadas (<span id="archived-count">0</span>)
+  </button>
+  <div class="archived-section" id="archived-section">
+    <div class="eval-table-wrap">
+      <table class="archived-table">
+        <thead>
+          <tr>
+            <th style="width:25%">Solução</th>
+            <th style="width:40%">Descrição</th>
+            <th style="width:20%">Concluída em</th>
+            <th style="width:15%"></th>
+          </tr>
+        </thead>
+        <tbody id="archived-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /panel-eval -->
+
+<!-- ── DELETE CONFIRM MODAL ───────────────────────────────── -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal">
+    <h3>Remover item?</h3>
+    <p>Esta ação não pode ser desfeita. O item será removido permanentemente.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-red" id="confirm-del-btn">Remover</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PRINT SLIDES (hidden on screen, rendered on print)
+════════════════════════════════════════════════════════════ -->
+<div id="print-root" style="display:none"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════════════════ */
+const defaultData = {
+  q3: {
+    delivery: [
+      { title: 'Supply Pagamentos', obj: 'Expandir pagamentos escritural via API com parceiro de integração Supply', resumo: 'Adicionar clientes aderentes ao piloto, executar testes na nova versão do DataGrid de forma controlada e garantir que a liberação para os clientes continuam preservando as jornadas de negócio e o comportamento atual em produção.', jira: '', size: '' },
+      { title: 'Evolução da API de geração de parcelas vencidas', obj: 'Aumentar cobertura do escopo de negócio na utilização das APIs', resumo: 'Realizado refatoração da API para dar abrangência na utilização por clientes integrados com VAN de transmissões de arquivos.', jira: '', size: '' },
+      { title: 'Liberação da integração Supply Cobranças', obj: 'Acelerar a expansão do piloto de cobranças integrado com o parceiro Supply, possibilitando entrega de GAP de negócio existente no Sienge.', resumo: 'Atuação direcionada nas correções e implementações necessárias para a expansão do piloto e liberação para oferta aos clientes.', jira: '', size: '' },
+      { title: 'Baixa de cobranças com QRCode – RI Itaú', obj: 'Garantir consistência na conciliação bancária quando uma cobrança é liquidada via pagamento QRCode.', resumo: 'Adição do calendário interno do Sienge para garantir que a data informada no webhook do Itaú esteja coerente com a data do crédito retornada no extrato bancário.', jira: '', size: '' },
+      { title: 'Programação de pagamentos multiempresa (EVEN)', obj: 'Entregar eficiência operacional para empresas com grandes demandas de pagamento escritural, eliminando gargalo operacional na jornada de geração de pagamentos.', resumo: 'Realizado grande alteração no fluxo de programação e geração de arquivos de pagamento escritural, integrado com VAN de transmissão (NEXXERA) garantindo geração de pagamentos em massa e multiempresa.', jira: '', size: '' },
+      { title: 'Estudo da arquitetura de pagamentos via API', obj: 'Realizar estudo da estrutura atual de pagamentos via API implementado na Supply para definir evolução de tecnologia para modelo Whitelabel.', resumo: 'Realizado estudo da estrutura atual de pagamentos via API para identificar solidez da arquitetura que possibilite evolução para modelo Whitelabel.', jira: '', size: '' },
+    ],
+    discovery: [
+      { title: 'Fluxo de Caixa – Fase 2: Acompanhamento', obj: '', resumo: 'Estudo para evoluções no MVP do Fluxo de caixa que será entregue em Q3.', jira: '', size: '' },
+      { title: 'Aprovação Orçamentária – Comparativo de Versões', obj: '', resumo: 'Evolução na estrutura de aprovação entregue em Q2. Com inclusão de IA para ter um agente autorizador que compare versões e faça recomendações de aprovação.', jira: '', size: '' },
+    ]
+  },
+  q2: {
+    delivery: [
+      { title: 'Testes Migração do DataGrid', obj: 'Possibilitar exportação e análises de forma mais completa.', resumo: 'Executar testes na nova versão do DataGrid de forma controlada e garantir que a liberação para os clientes continuam preservando as jornadas de negócio e o comportamento atual em produção.', jira: '', size: '' },
+      { title: 'Evolução da API de geração de parcelas vencidas', obj: 'Aumentar cobertura do escopo de negócio na utilização das APIs.', resumo: 'Realizado refatoração da API para dar abrangência na utilização por clientes integrados com VAN de transmissões de arquivos.', jira: '', size: '' },
+      { title: 'Liberação da integração Supply Cobranças', obj: 'Acelerar a expansão do piloto de cobranças integrado com o parceiro Supply, possibilitando entrega de GAP de negócio existente no Sienge.', resumo: 'Atuação direcionada nas correções e implementações necessárias para a expansão do piloto e liberação para oferta aos clientes.', jira: '', size: '' },
+      { title: 'Baixa de cobranças com QRCode – RI Itaú', obj: 'Garantir consistência na conciliação bancária quando uma cobrança é liquidada via pagamento QRCode.', resumo: 'Adição do calendário interno do Sienge para garantir que a data informada no webhook do Itaú esteja coerente com a data do crédito retornada no extrato bancário.', jira: '', size: '' },
+      { title: 'Programação de pagamentos multiempresa (EVEN)', obj: 'Entregar eficiência operacional para empresas com grandes demandas de pagamento escritural.', resumo: 'Realizado grande alteração no fluxo de programação e geração de arquivos de pagamento escritural, integrado com VAN de transmissão (NEXXERA).', jira: '', size: '' },
+      { title: 'Estudo da arquitetura de pagamentos via API', obj: 'Realizar estudo da estrutura atual de pagamentos via API implementado na Supply para definir evolução de tecnologia para modelo Whitelabel.', resumo: 'Realizado estudo da estrutura atual de pagamentos via API para identificar solidez da arquitetura que possibilite evolução para modelo Whitelabel.', jira: '', size: '' },
+    ],
+    discovery: [
+      { title: 'Fluxo de Caixa – Fase 2: Acompanhamento', obj: '', resumo: 'Estudo para evoluções no MVP do Fluxo de caixa que será entregue em Q3.', jira: '', size: '' },
+      { title: 'Aprovação Orçamentária – Comparativo de Versões', obj: '', resumo: 'Evolução na estrutura de aprovação entregue em Q2. Com inclusão de IA para agente autorizador que compare versões e faça recomendações de aprovação.', jira: '', size: '' },
+    ]
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER CARDS
+════════════════════════════════════════════════════════════ */
+function renderCards(quarter, type) {
+  const data = loadData();
+  const listId = `${quarter}-${type}-list`;
+  const container = document.getElementById(listId);
+  if (!container) return;
+  const items = data[quarter][type];
+  container.innerHTML = '';
+  if (items.length === 0) {
+    container.innerHTML = `<div class="empty-state">Nenhum item ainda. Clique em "+ ${type === 'delivery' ? 'Delivery' : 'Discovery'}" para adicionar.</div>`;
+    return;
+  }
+  items.forEach((item, i) => {
+    const t = type;
+    const sz = item.size || '';
+    const sizes = ['', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    const sizeOpts = sizes.map(s => `<option value="${s}" ${s === sz ? 'selected' : ''}>${s || '— tamanho'}</option>`).join('');
+    const jiraLink = item.jira ? `<a class="jira-link ${t === 'delivery' ? 'delivery-link' : ''}" href="${escHref(item.jira)}" target="_blank" rel="noopener">↗ Abrir</a>` : '';
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.quarter = quarter;
+    card.dataset.type = type;
+    card.dataset.index = i;
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="card-num ${t}">${i + 1}</div>
+        <div class="card-title" contenteditable="true" spellcheck="false"
+          onblur="saveField(this,'${quarter}','${type}',${i},'title')">${esc(item.title)}</div>
+        <select class="size-select ${t} sz-${sz.replace('','')}"
+          onchange="saveSize(this,'${quarter}','${type}',${i})">${sizeOpts}</select>
+        <div class="card-actions">
+          <button class="icon-btn del" onclick="confirmDelete('${quarter}','${type}',${i})" title="Remover">🗑</button>
+        </div>
+      </div>
+      <div class="card-body">
+        ${item.obj !== undefined && (type === 'delivery' || item.obj) ? `
+        <div class="field-row">
+          <div class="field-label ${t}">Objetivo</div>
+          <div class="field-text ${t}" contenteditable="true" spellcheck="false"
+            onblur="saveField(this,'${quarter}','${type}',${i},'obj')">${esc(item.obj)}</div>
+        </div>` : ''}
+        <div class="field-row">
+          <div class="field-label ${t}">Resumo</div>
+          <div class="field-text ${t}" contenteditable="true" spellcheck="false"
+            onblur="saveField(this,'${quarter}','${type}',${i},'resumo')">${esc(item.resumo)}</div>
+        </div>
+        <div class="jira-row">
+          <span class="jira-label ${t}">Jira</span>
+          <input class="jira-input ${t}" type="url" placeholder="https://empresa.atlassian.net/browse/EPIC-1"
+            value="${escAttr(item.jira)}"
+            onblur="saveJira(this,'${quarter}','${type}',${i})">
+          ${jiraLink}
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function renderAll() {
+  ['q3','q2'].forEach(q => {
+    ['delivery','discovery'].forEach(t => renderCards(q, t));
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PERSISTENCE
+════════════════════════════════════════════════════════════ */
+function loadData() {
+  try {
+    const raw = localStorage.getItem('plugandpay-roadmap');
+    return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultData));
+  } catch { return JSON.parse(JSON.stringify(defaultData)); }
+}
+function saveData(data) {
+  localStorage.setItem('plugandpay-roadmap', JSON.stringify(data));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIELDS
+════════════════════════════════════════════════════════════ */
+function saveField(el, quarter, type, idx, field) {
+  const data = loadData();
+  data[quarter][type][idx][field] = el.innerText.trim();
+  saveData(data);
+}
+function saveJira(el, quarter, type, idx) {
+  const data = loadData();
+  data[quarter][type][idx].jira = el.value.trim();
+  saveData(data);
+  renderCards(quarter, type);
+}
+function saveSize(el, quarter, type, idx) {
+  const data = loadData();
+  const sz = el.value;
+  data[quarter][type][idx].size = sz;
+  saveData(data);
+  // update badge class without re-rendering
+  el.className = `size-select ${type} sz-${sz}`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ADD / DELETE
+════════════════════════════════════════════════════════════ */
+function addCard(listId, type) {
+  const [quarter] = listId.split('-');
+  const data = loadData();
+  data[quarter][type].push({ title: 'Novo item', obj: '', resumo: '', jira: '' });
+  saveData(data);
+  renderCards(quarter, type);
+  showToast(`Item de ${type === 'delivery' ? 'Delivery' : 'Discovery'} adicionado.`);
+}
+
+let pendingDelete = null;
+function confirmDelete(quarter, type, idx) {
+  pendingDelete = { quarter, type, idx };
+  document.getElementById('del-modal').classList.add('open');
+  document.getElementById('confirm-del-btn').onclick = () => {
+    if (!pendingDelete) return;
+    const { quarter, type, idx } = pendingDelete;
+    const data = loadData();
+    data[quarter][type].splice(idx, 1);
+    saveData(data);
+    renderCards(quarter, type);
+    closeModal();
+    showToast('Item removido.');
+  };
+}
+function closeModal() {
+  document.getElementById('del-modal').classList.remove('open');
+  pendingDelete = null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FOCUS LIST
+════════════════════════════════════════════════════════════ */
+function addFocusItem(listId) {
+  const ul = document.getElementById(listId);
+  const li = document.createElement('li');
+  li.innerHTML = `<span contenteditable="true" spellcheck="false">Novo item estratégico</span><button class="icon-btn del" onclick="removeFocusItem(this)" title="Remover">×</button>`;
+  ul.appendChild(li);
+  li.querySelector('span').focus();
+}
+function removeFocusItem(btn) {
+  btn.closest('li').remove();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════════════════════ */
+function switchTab(tab) {
+  ['q2','q3'].forEach(q => {
+    document.getElementById(`panel-${q}`).classList.toggle('active', q === tab);
+    const btn = document.getElementById(`tab-${q}`);
+    btn.classList.toggle('active', q === tab);
+  });
+  // eval tab
+  document.getElementById('panel-eval').classList.toggle('active', tab === 'eval');
+  document.getElementById('tab-eval').classList.toggle('active', tab === 'eval');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════════════ */
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return (s||'').replace(/"/g,'&quot;'); }
+function escHref(s) { return s.startsWith('http') ? s : 'https://'+s; }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EXPORT — builds print-only DOM then triggers window.print()
+════════════════════════════════════════════════════════════ */
+function exportReport() {
+  const data = loadData();
+
+  // Collect live editorial text from DOM
+  const liveText = (id) => (document.getElementById(id)||{}).innerText || '';
+  const liveFocusList = (listId) => {
+    const ul = document.getElementById(listId);
+    if (!ul) return [];
+    return Array.from(ul.querySelectorAll('li span')).map(s => s.innerText.trim()).filter(Boolean);
+  };
+
+  const teamName = (document.getElementById('team-name')||{}).innerText || 'Time';
+  const quarters = [
+    {
+      key: 'q3',
+      isPast: false,
+      qName:   liveText('q3-quarter') || 'Q3/2026',
+      product: liveText('q3-name') || 'PlugAndPay',
+      period:  liveText('q3-period') || 'Jul – Set/2026',
+      focus:   liveText('q3-focus'),
+      obj:     liveFocusList('q3-obj-list'),
+      exp:     liveFocusList('q3-exp-list'),
+      focusItems: liveFocusList('q3-focus-list'),
+    },
+    {
+      key: 'q2',
+      isPast: true,
+      qName:   liveText('q2-quarter') || 'Q2/2026',
+      product: liveText('q2-name') || 'PlugAndPay',
+      period:  liveText('q2-period') || 'Abr – Jun/2026',
+      focus:   liveText('q2-focus'),
+      obj:     liveFocusList('q2-obj-list'),
+      exp:     liveFocusList('q2-exp-list'),
+      focusItems: liveFocusList('q2-focus-list'),
+    },
+  ];
+
+  const root = document.getElementById('print-root');
+  root.innerHTML = '';
+  root.style.display = 'block';
+
+  quarters.forEach(q => {
+    const slide = document.createElement('div');
+    slide.className = 'print-slide';
+
+    const items = data[q.key];
+    const deliveryCards = (items.delivery||[]).map((item, i) => printCard(item, i+1, 'delivery')).join('');
+    const discoveryCards = (items.discovery||[]).map((item, i) => printCard(item, i+1, 'discovery')).join('');
+    const focusBullets = q.focusItems.map(f => `<li>${esc(f)}</li>`).join('');
+
+    slide.innerHTML = `
+      <div class="slide-print-header ${q.isPast ? 'past-border' : ''}">
+        <div style="display:flex;align-items:center;gap:6mm;">
+          <div class="print-sienge-logo">
+            <div class="print-sienge-icon">s</div>
+            <div class="print-sienge-text">
+              <span class="print-sienge-name">sienge</span>
+              <span class="print-sienge-sub">Plataforma</span>
+            </div>
+          </div>
+          <div class="print-doc-meta">
+            <div class="print-doc-eyebrow">Planejamento Estratégico de Produto</div>
+            <div class="print-doc-team">Time: ${esc(teamName)}</div>
+          </div>
+        </div>
+        <div class="slide-print-meta">
+          <div class="qname ${q.isPast ? 'past-em' : ''}">Roadmap ${esc(q.product)} <em>${esc(q.qName)}</em></div>
+          <div class="qperiod">${esc(q.period)}</div>
+          <div class="qfocus">${esc(q.focus)}</div>
+        </div>
+      </div>
+
+      <div class="print-content-area">
+        <div class="print-strategic">
+          <div class="strategic-card">
+            <h4>Objetivo do Trimestre</h4>
+            <ul class="focus-list" style="padding-left:0">${q.obj.map(o=>`<li>${esc(o)}</li>`).join('')}</ul>
+          </div>
+          <div class="strategic-card navy">
+            <h4>Foco Estratégico</h4>
+            <ul class="focus-list" style="padding-left:0">${focusBullets}</ul>
+          </div>
+          <div class="strategic-card">
+            <h4>Expectativa</h4>
+            <ul class="focus-list" style="padding-left:0">${q.exp.map(e=>`<li>${esc(e)}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <div class="print-columns">
+          <div>
+            <div><span class="print-col-title delivery">Itens de Delivery</span></div>
+            ${deliveryCards || '<p style="font-size:8pt;color:#999">Nenhum item.</p>'}
+          </div>
+          <div>
+            <div><span class="print-col-title discovery">Itens de Discovery</span></div>
+            ${discoveryCards || '<p style="font-size:8pt;color:#999">Nenhum item.</p>'}
+          </div>
+        </div>
+      </div>`;
+
+    root.appendChild(slide);
+  });
+
+  // Give browser a tick to paint, then print
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.print();
+      // Clean up after dialog closes
+      setTimeout(() => { root.innerHTML = ''; root.style.display = 'none'; }, 1500);
+    });
+  });
+}
+
+function printCard(item, num, type) {
+  const sz = item.size || '';
+  const sizeColors = { XS:'#e8f5e9;color:#2e7d32', S:'#e3f2fd;color:#1565c0', M:'#fff8e1;color:#f57f17', L:'#fff3e0;color:#e65100', XL:'#fce4ec;color:#880e4f', XXL:'#f3e5f5;color:#6a1b9a' };
+  const sizeBadge = sz ? `<span class="print-size-badge" style="background:${(sizeColors[sz]||'#eee;color:#999').split(';')[0]};${(sizeColors[sz]||'').split(';')[1]||''}">${sz}</span>` : '';
+  const jiraText = item.jira ? `<span class="print-card-jira">↗ ${esc(item.jira.replace(/^https?:\/\//,'').substring(0,40))}</span>` : '';
+  const objRow = item.obj ? `
+    <div class="print-field-label ${type}">Objetivo</div>
+    <div class="print-field-val">${esc(item.obj)}</div>` : '';
+  return `
+    <div class="print-card">
+      <div class="print-card-head">
+        <div class="print-num ${type}">${num}</div>
+        <div class="print-card-title">${esc(item.title)}</div>
+        ${sizeBadge}
+        ${jiraText}
+      </div>
+      <div class="print-card-body">
+        ${objRow}
+        <div class="print-field-label ${type}">Resumo</div>
+        <div class="print-field-val">${esc(item.resumo)}</div>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EVALUATION
+════════════════════════════════════════════════════════════ */
+const defaultEval = [
+  { id: 1, title: 'Supply Pagamentos — Piloto', desc: 'Integração escritural via API com parceiro Supply, em fase de validação com clientes selecionados.', status: 'piloto', kpi: '', archived: false, archivedAt: '' },
+  { id: 2, title: 'Baixa QRCode – RI Itaú', desc: 'Garantia de consistência na conciliação bancária para cobranças liquidadas via QRCode.', status: 'escalando', kpi: '', archived: false, archivedAt: '' },
+  { id: 3, title: 'Programação multiempresa (EVEN)', desc: 'Geração em massa de pagamentos escriturais integrada com VAN NEXXERA, em expansão para demais clientes.', status: 'escalando', kpi: '', archived: false, archivedAt: '' },
+];
+
+function loadEval() {
+  try {
+    const raw = localStorage.getItem('plugandpay-eval');
+    return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultEval));
+  } catch { return JSON.parse(JSON.stringify(defaultEval)); }
+}
+function saveEval(data) { localStorage.setItem('plugandpay-eval', JSON.stringify(data)); }
+
+function renderEval() {
+  const data = loadEval();
+  const active   = data.filter(d => !d.archived);
+  const archived = data.filter(d => d.archived);
+
+  const statusLabel = { piloto: 'Em Piloto', escalando: 'Escalando', concluida: 'Concluída' };
+
+  // Active rows
+  const tbody = document.getElementById('eval-tbody');
+  tbody.innerHTML = '';
+  if (active.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:28px">Nenhuma solução em acompanhamento. Clique em "+ Solução" para adicionar.</td></tr>`;
+  } else {
+    active.forEach(item => {
+      const tr = document.createElement('tr');
+      const kpiLink = item.kpi ? `<a class="kpi-link" href="${escHref(item.kpi)}" target="_blank" rel="noopener">↗ Ver KPI</a>` : '';
+      const isConcluida = item.status === 'concluida';
+      tr.innerHTML = `
+        <td class="feat-name">
+          <div contenteditable="true" spellcheck="false"
+            onblur="saveEvalField(${item.id},'title',this.innerText.trim())">${esc(item.title)}</div>
+        </td>
+        <td class="feat-desc">
+          <div contenteditable="true" spellcheck="false"
+            onblur="saveEvalField(${item.id},'desc',this.innerText.trim())">${esc(item.desc)}</div>
+        </td>
+        <td>
+          <select class="status-select s-${item.status}"
+            onchange="saveEvalStatus(${item.id}, this)">
+            <option value="piloto"    ${item.status==='piloto'    ?'selected':''}>🔵 Em Piloto</option>
+            <option value="escalando" ${item.status==='escalando' ?'selected':''}>🟡 Escalando</option>
+            <option value="concluida" ${item.status==='concluida' ?'selected':''}>🟢 Concluída</option>
+          </select>
+        </td>
+        <td>
+          <div class="kpi-cell">
+            <input class="kpi-input" type="url" placeholder="https://..." value="${escAttr(item.kpi)}"
+              onblur="saveEvalField(${item.id},'kpi',this.value.trim()); renderEval()">
+            ${kpiLink}
+          </div>
+        </td>
+        <td>
+          <div class="eval-row-actions">
+            ${isConcluida ? `<button class="archive-btn" onclick="archiveEval(${item.id})">📦 Arquivar</button>` : ''}
+            <button class="icon-btn del" onclick="confirmDeleteEval(${item.id})" title="Remover">🗑</button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Archived rows
+  const atbody = document.getElementById('archived-tbody');
+  atbody.innerHTML = '';
+  document.getElementById('archived-count').textContent = archived.length;
+  if (archived.length === 0) {
+    atbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Nenhuma solução arquivada.</td></tr>`;
+  } else {
+    archived.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:700">${esc(item.title)}</td>
+        <td>${esc(item.desc)}</td>
+        <td>${esc(item.archivedAt)}</td>
+        <td><button class="restore-btn" onclick="restoreEval(${item.id})">↩ Restaurar</button></td>`;
+      atbody.appendChild(tr);
+    });
+  }
+}
+
+function saveEvalField(id, field, value) {
+  const data = loadEval();
+  const item = data.find(d => d.id === id);
+  if (item) { item[field] = value; saveEval(data); }
+}
+
+function saveEvalStatus(id, select) {
+  const data = loadEval();
+  const item = data.find(d => d.id === id);
+  if (item) {
+    item.status = select.value;
+    saveEval(data);
+    select.className = `status-select s-${select.value}`;
+    // Show/hide archive button without full re-render
+    renderEval();
+  }
+}
+
+function addEvalItem() {
+  const data = loadEval();
+  const newId = Date.now();
+  data.push({ id: newId, title: 'Nova solução', desc: '', status: 'piloto', kpi: '', archived: false, archivedAt: '' });
+  saveEval(data);
+  renderEval();
+  showToast('Solução adicionada.');
+}
+
+function archiveEval(id) {
+  const data = loadEval();
+  const item = data.find(d => d.id === id);
+  if (item) {
+    item.archived = true;
+    item.archivedAt = new Date().toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+    saveEval(data);
+    renderEval();
+    showToast('Solução arquivada.');
+  }
+}
+
+function restoreEval(id) {
+  const data = loadEval();
+  const item = data.find(d => d.id === id);
+  if (item) { item.archived = false; item.archivedAt = ''; saveEval(data); renderEval(); showToast('Solução restaurada.'); }
+}
+
+function confirmDeleteEval(id) {
+  pendingDelete = { evalId: id };
+  document.getElementById('del-modal').classList.add('open');
+  document.getElementById('confirm-del-btn').onclick = () => {
+    const data = loadEval().filter(d => d.id !== pendingDelete.evalId);
+    saveEval(data);
+    renderEval();
+    closeModal();
+    showToast('Solução removida.');
+  };
+}
+
+function toggleArchived() {
+  const sec = document.getElementById('archived-section');
+  const arrow = document.getElementById('archived-arrow');
+  const open = sec.classList.toggle('open');
+  arrow.textContent = open ? '▼' : '▶';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('plugandpay-roadmap')) {
+    saveData(JSON.parse(JSON.stringify(defaultData)));
+  }
+  if (!localStorage.getItem('plugandpay-eval')) {
+    saveEval(JSON.parse(JSON.stringify(defaultEval)));
+  }
+  renderAll();
+  renderEval();
+
+  // Sync tab labels from editable quarter fields
+  document.getElementById('q3-quarter').addEventListener('input', e => {
+    document.getElementById('tab-q3-label').textContent = e.target.innerText;
+  });
+  document.getElementById('q2-quarter').addEventListener('input', e => {
+    document.getElementById('tab-q2-label').textContent = e.target.innerText;
+  });
+});
+</script>
+</body>
+</html>
