@@ -40,3 +40,12 @@ T-SHIRT SIZE / ESTIMATIVA
   - "Component" (campo padrão do Jira)
   - "Team"
   Se ausente: retornar null.
+
+ESCOPO DO ITEM (Roadmap / Extra Roadmap)
+  Nomes possíveis:
+  - "Escopo"
+  - "Scope"
+  - "Tipo de Escopo"
+  - "Roadmap Scope"
+  - "Classificação"
+  Se ausente: retornar null (o PM preencherá manualmente).
