@@ -6,7 +6,7 @@ SUB-AGENTE 2 — Extrator de Épicos Jira
   Entrada: { space_key, quarter }
   Saída: { epicos_raw[] } — lista de épicos com todos os campos brutos do Jira
 
-SUB-AGENTE 3 — Classificador Delivery/Discovery
+SUB-AGENTE 3 — Classificador Deliv./Discovery
   Entrada: { epicos_raw[] }
   Saída: { epicos_classificados[] } — cada épico recebe campo "tipo": "delivery" | "discovery"
 
