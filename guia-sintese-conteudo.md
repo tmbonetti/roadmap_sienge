@@ -112,7 +112,14 @@
       34+     → "XXL"
   - Se o campo não existir ou for null: string vazia ""
   - Nunca inventar estimativa
-
+    
+### SCOPE (apenas delivery)
+  - Fonte: custom_fields.escopo
+  - Mapeamento:
+      contém "extra" (case-insensitive)  → "extra"
+      contém "roadmap" E NÃO "extra"     → "roadmap"
+      null ou vazio                       → "" (PM preencherá)
+  - Apenas para épicos tipo "delivery". Discovery não recebe scope.
 
 ## Exemplos de antes/depois
 
