@@ -8,10 +8,6 @@ ter nomes diferentes em cada instância Jira.
 PLANEJADO PARA
   Nomes possíveis no Jira:
   - "Planejado Para"
-  - "Planned For"
-  - "Target Quarter"
-  - "Quarter"
-  - "Sprint Quarter"
   Se nenhum for encontrado: reportar erro ao Orquestrador.
 
 ## Campos desejáveis para extração
@@ -19,18 +15,11 @@ PLANEJADO PARA
 TIPO DE INICIATIVA
   Nomes possíveis:
   - "Tipo de Iniciativa"
-  - "Initiative Type"
-  - "Tipo"
-  - "Category"
-  Se ausente: retornar null (o Classificador inferirá).
+Se ausente: retornar null (o Classificador inferirá).
 
 T-SHIRT SIZE / ESTIMATIVA
   Nomes possíveis:
-  - "T-Shirt Size"
-  - "Tamanho"
-  - "Size"
-  - "Story Points"
-  - "Estimation"
+  - "Tam. Camiseta"
   Se ausente: retornar null.
 
 ÁREA DE PRODUTO
@@ -42,10 +31,5 @@ T-SHIRT SIZE / ESTIMATIVA
   Se ausente: retornar null.
 
 ESCOPO DO ITEM (Roadmap / Extra Roadmap)
-  Nomes possíveis:
-  - "Escopo"
-  - "Scope"
-  - "Tipo de Escopo"
-  - "Roadmap Scope"
-  - "Classificação"
+  - "Tipo de Roadmap"
   Se ausente: retornar null (o PM preencherá manualmente).
