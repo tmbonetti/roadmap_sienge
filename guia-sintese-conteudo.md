@@ -132,6 +132,7 @@ ANTES (dados brutos do Jira):
   continuam preservando as jornadas de negócio e o comportamento
   atual em produção."
   tshirt_size: "Medium"
+  "scope": "roadmap"
 
 DEPOIS (sintetizado):
   titulo: "Supply Pagamentos"
@@ -142,6 +143,7 @@ DEPOIS (sintetizado):
   liberação para os clientes preserve as jornadas de negócio e o
   comportamento atual em produção."
   size: "M"
+  scope: "roadmap"
 
 Notas:
   - Prefixo "[EPIC]" removido do título
@@ -160,6 +162,7 @@ ANTES (description sem marcadores):
   pagamento escritural, integrado com VAN de transmissão (NEXXERA)
   garantindo geração de pagamentos em massa e multi empresa."
   tshirt_size: null
+  scope: "Extra Roadmap"
 
 DEPOIS (sintetizado):
   titulo: "Programação de pagamentos multiempresa (EVEN)"
@@ -170,6 +173,7 @@ DEPOIS (sintetizado):
   de pagamento escritural, integrado com VAN de transmissão (NEXXERA),
   garantindo geração de pagamentos em massa e multiempresa."
   size: ""
+  scope: "Extra Roadmap"
 
 Notas:
   - Sem marcadores → primeiro período virou Objetivo, restante virou Resumo
@@ -184,12 +188,14 @@ ANTES (description vazia):
       webhook Itaú. Deploy realizado em staging." }
   ]
   tshirt_size: "3"
+  scope: "Extra Roadmap"
 
 DEPOIS (sintetizado):
   titulo: "Hotfix conciliação bancária"
   objetivo: ""
   resumo: "Correção no cálculo de hash do webhook Itaú."
   size: "S"
+  scope: "Extra Roadmap"
 
 Notas:
   - Description vazia → objetivo vazio
