@@ -132,7 +132,7 @@ Estrutura:
   const defaultData = {
     q3: {
       delivery: [
-        { title: '...', obj: '...', resumo: '...', jira: '...', size: '...' },
+         { title: '...', obj: '...', resumo: '...', jira: '...', scope: '...', size: '...' },
       ],
       discovery: [
         { title: '...', obj: '...', resumo: '...', jira: '...', size: '...' },
