@@ -27,5 +27,5 @@ SUB-AGENTE 7 — Identificador de Soluções em Desempenho
   Saída: { solucoes_desempenho[] }
 
 SUB-AGENTE 8 — Gerador de HTML
-  Entrada: { contexto{}, quarter_passado{}, quarter_futuro{}, solucoes_desempenho[] }
+  Entrada: { contexto{}, quarter_passado{}, quarter_futuro{}, solucoes_desempenho[], delivery[] inclui campo scope ('roadmap'|'extra'|'') }
   Saída: arquivo HTML completo
