@@ -12,7 +12,7 @@ SUB-AGENTE 3 — Classificador Deliv./Discovery
 
 SUB-AGENTE 4 — Sintetizador de Conteúdo de Épicos
   Entrada: { epicos_classificados[] }
-  Saída: { epicos_prontos[] } — cada épico com titulo, objetivo, resumo, jira_url, size
+  Saída: { epicos_prontos[] } — cada épico com titulo, objetivo, resumo, jira_url, size, scope (delivery only)
 
 SUB-AGENTE 5 — Facilitador de Planejamento Futuro
   Entrada: { quarter_futuro, epicos_prontos_passado[] }
